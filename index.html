@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manuscript Submission Portal (Demo)</title>
+<style>
+  :root { --ink:#1b2430; --muted:#5d6b7a; --line:#d8dee6; --brand:#1f4e79; --bg:#f4f6f9; --ok:#1d7a46; --warn:#b45309; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, Helvetica, sans-serif; color:var(--ink); background:var(--bg); line-height:1.45; }
+  header { background:var(--brand); color:#fff; padding:18px 28px; }
+  header h1 { margin:0; font-size:20px; }
+  header p { margin:4px 0 0; font-size:13px; opacity:.85; }
+  .wrap { max-width:1180px; margin:0 auto; padding:22px; display:grid; grid-template-columns:1fr 340px; gap:22px; }
+  @media (max-width:900px){ .wrap{grid-template-columns:1fr;} }
+  fieldset { background:#fff; border:1px solid var(--line); border-radius:8px; margin:0 0 18px; padding:16px 18px 6px; }
+  legend { font-weight:bold; color:var(--brand); padding:0 8px; font-size:15px; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:640px){ .row{grid-template-columns:1fr;} }
+  label { display:block; font-size:13px; font-weight:bold; margin:0 0 4px; }
+  .field { margin-bottom:14px; }
+  input[type=text], input[type=email], input[type=number], input[type=date], select, textarea {
+    width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+  textarea { min-height:110px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:2px solid #8fb4d9; border-color:var(--brand); }
+  .hint { font-size:12px; color:var(--muted); margin-top:3px; }
+  .count { float:right; font-weight:normal; color:var(--muted); font-size:12px; }
+  .check { display:flex; gap:9px; align-items:flex-start; margin-bottom:10px; font-size:14px; }
+  .check input { margin-top:3px; }
+  .check label { font-weight:normal; margin:0; font-size:14px; }
+  .author { border:1px dashed var(--line); border-radius:6px; padding:12px; margin-bottom:12px; background:#fafbfc; }
+  .author h4 { margin:0 0 10px; font-size:13px; color:var(--muted); }
+  button { font:inherit; cursor:pointer; border-radius:6px; padding:10px 18px; border:1px solid var(--brand); }
+  .primary { background:var(--brand); color:#fff; }
+  .primary:disabled { background:#9db3c7; border-color:#9db3c7; cursor:not-allowed; }
+  .ghost { background:#fff; color:var(--brand); }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 24px; }
+  aside .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px; position:sticky; top:16px; }
+  aside h2 { margin:0 0 10px; font-size:15px; color:var(--brand); }
+  .bar { height:8px; background:#e5eaf0; border-radius:99px; overflow:hidden; margin:6px 0 14px; }
+  .bar span { display:block; height:100%; width:0; background:var(--ok); transition:width .25s; }
+  dl { margin:0; font-size:13px; }
+  dt { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.04em; margin-top:9px; }
+  dd { margin:2px 0 0; word-break:break-word; }
+  .empty { color:#a0a9b4; font-style:italic; }
+  .err { color:#b42318; font-size:12px; margin-top:3px; display:none; }
+  .invalid input, .invalid select, .invalid textarea { border-color:#b42318; }
+  .invalid .err { display:block; }
+  #receipt { display:none; background:#e8f5ed; border:1px solid #9bd2b2; color:#14532d; border-radius:8px; padding:16px 18px; margin-bottom:18px; }
+  #receipt h3 { margin:0 0 6px; }
+  .tag { display:inline-block; background:#e6eef6; color:var(--brand); border-radius:99px; padding:2px 9px; font-size:12px; margin:2px 3px 0 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Manuscript Submission Portal</h1>
+  <p>Demo form for browser automation. Nothing is sent anywhere. All data stays on this page.</p>
+</header>
+
+<div class="wrap">
+<main>
+  <div id="receipt" role="status" aria-live="polite">
+    <h3>Submission received (demo)</h3>
+    <div id="receiptText"></div>
+  </div>
+
+  <form id="subForm" novalidate>
+
+    <fieldset id="fs-journal">
+      <legend>1. Journal and article type</legend>
+      <div class="row">
+        <div class="field">
+          <label for="journal">Target journal</label>
+          <input type="text" id="journal" name="journal" placeholder="e.g. Demo Journal of Management Studies">
+          <div class="err">Enter the journal name.</div>
+        </div>
+        <div class="field">
+          <label for="publisher">Publisher</label>
+          <select id="publisher" name="publisher">
+            <option value="">Select</option>
+            <option>Demo Academic Press</option><option>Sample University Press</option><option>Example Publishing Group</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="articleType">Article type</label>
+          <select id="articleType" name="articleType">
+            <option value="">Select</option>
+            <option>Original research article</option><option>Systematic literature review</option>
+            <option>Bibliometric review</option><option>Conceptual paper</option>
+            <option>Short communication</option><option>Case study</option>
+          </select>
+          <div class="err">Pick an article type.</div>
+        </div>
+        <div class="field">
+          <label for="submissionDate">Submission date</label>
+          <input type="date" id="submissionDate" name="submissionDate">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="fs-ms">
+      <legend>2. Manuscript details</legend>
+      <div class="field">
+        <label for="title">Full title</label>
+        <input type="text" id="title" name="title" placeholder="Title of the manuscript">
+        <div class="err">Enter the manuscript title.</div>
+      </div>
+      <div class="field">
+        <label for="shortTitle">Running title <span class="count"><span id="stCount">0</span>/60</span></label>
+        <input type="text" id="shortTitle" name="shortTitle" maxlength="60">
+      </div>
+      <div class="field">
+        <label for="abstract">Abstract <span class="count"><span id="abCount">0</span> words (limit 250)</span></label>
+        <textarea id="abstract" name="abstract" placeholder="Paste or type the abstract"></textarea>
+        <div class="err">Enter an abstract of up to 250 words.</div>
+      </div>
+      <div class="field">
+        <label for="keywords">Keywords</label>
+        <input type="text" id="keywords" name="keywords" placeholder="Separate with commas, 4 to 6 keywords">
+        <div class="hint">Example: agentic AI, consumer decision-making, SaaS adoption</div>
+        <div class="err">Add at least 4 keywords.</div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="wordCount">Main text word count</label>
+          <input type="number" id="wordCount" name="wordCount" min="0" placeholder="e.g. 8200">
+        </div>
+        <div class="field">
+          <label for="figTab">Figures and tables</label>
+          <input type="text" id="figTab" name="figTab" placeholder="e.g. 5 figures, 7 tables">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="fs-authors">
+      <legend>3. Authors</legend>
+      <div id="authorList">
+        <div class="author" data-author>
+          <h4>Corresponding author</h4>
+          <div class="row">
+            <div class="field"><label>Full name</label><input type="text" class="a-name" placeholder="Full name"></div>
+            <div class="field"><label>Email</label><input type="email" class="a-email" placeholder="name@example.com"><div class="err">Enter a valid email.</div></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Affiliation</label><input type="text" class="a-aff" placeholder="Department, institution, city, country"></div>
+            <div class="field"><label>ORCID iD</label><input type="text" class="a-orcid" placeholder="0000-0000-0000-0000"></div>
+          </div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="ghost" id="addAuthor">+ Add co-author</button></div>
+    </fieldset>
+
+    <fieldset id="fs-letter">
+      <legend>4. Cover letter and reviewers</legend>
+      <div class="field">
+        <label for="coverLetter">Cover letter</label>
+        <textarea id="coverLetter" name="coverLetter" placeholder="Why this paper fits the journal"></textarea>
+      </div>
+      <div class="field">
+        <label for="reviewers">Suggested reviewers (optional)</label>
+        <textarea id="reviewers" name="reviewers" style="min-height:70px" placeholder="Name, institution, email. One per line."></textarea>
+      </div>
+      <div class="row">
+        <div class="field"><label for="msFile">Manuscript file</label><input type="file" id="msFile" name="msFile" accept=".doc,.docx,.pdf"></div>
+        <div class="field"><label for="clFile">Cover letter file (optional)</label><input type="file" id="clFile" name="clFile" accept=".doc,.docx,.pdf"></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="fs-decl">
+      <legend>5. Declarations</legend>
+      <div class="field">
+        <label for="funding">Funding statement</label>
+        <input type="text" id="funding" name="funding" placeholder="e.g. No external funding">
+      </div>
+      <div class="field">
+        <label for="coi">Conflict of interest</label>
+        <select id="coi" name="coi">
+          <option value="">Select</option>
+          <option>No conflict of interest</option>
+          <option>Conflict declared in cover letter</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="dataAvail">Data availability</label>
+        <select id="dataAvail" name="dataAvail">
+          <option value="">Select</option>
+          <option>Data available on request</option>
+          <option>Data in a public repository</option>
+          <option>Data not shareable</option>
+        </select>
+      </div>
+      <div class="check"><input type="checkbox" id="c1"><label for="c1">The work is original and not under review elsewhere.</label></div>
+      <div class="check"><input type="checkbox" id="c2"><label for="c2">All authors have read and approved the manuscript.</label></div>
+      <div class="check"><input type="checkbox" id="c3"><label for="c3">I disclose any use of AI tools in preparing the manuscript.</label></div>
+      <div class="field" style="margin-top:10px">
+        <label for="aiNote">AI use disclosure (if any)</label>
+        <input type="text" id="aiNote" name="aiNote" placeholder="e.g. Language polishing with an AI writing tool">
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" class="primary" id="submitBtn">Submit manuscript</button>
+      <button type="button" class="ghost" id="resetBtn">Clear form</button>
+    </div>
+  </form>
+</main>
+
+<aside>
+  <div class="card">
+    <h2>Live review</h2>
+    <div>Completion: <strong id="pct">0%</strong></div>
+    <div class="bar"><span id="barFill"></span></div>
+    <dl>
+      <dt>Journal</dt><dd id="r-journal" class="empty">Not filled</dd>
+      <dt>Article type</dt><dd id="r-type" class="empty">Not filled</dd>
+      <dt>Title</dt><dd id="r-title" class="empty">Not filled</dd>
+      <dt>Abstract</dt><dd id="r-abs" class="empty">Not filled</dd>
+      <dt>Keywords</dt><dd id="r-kw" class="empty">Not filled</dd>
+      <dt>Authors</dt><dd id="r-auth" class="empty">Not filled</dd>
+      <dt>Declarations</dt><dd id="r-decl" class="empty">0 of 3 confirmed</dd>
+    </dl>
+  </div>
+</aside>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var form = $('subForm');
+
+  function words(s){ s = s.trim(); return s ? s.split(/\s+/).length : 0; }
+  function setR(id, val){
+    var el = $(id);
+    if (val) { el.textContent = val; el.classList.remove('empty'); }
+    else { el.textContent = 'Not filled'; el.classList.add('empty'); }
+  }
+  function authors(){
+    return Array.prototype.map.call(document.querySelectorAll('[data-author]'), function(a){
+      return { name:a.querySelector('.a-name').value.trim(), email:a.querySelector('.a-email').value.trim(),
+               aff:a.querySelector('.a-aff').value.trim(), orcid:a.querySelector('.a-orcid').value.trim() };
+    });
+  }
+  function kwList(){ return $('keywords').value.split(',').map(function(k){return k.trim();}).filter(Boolean); }
+
+  function update(){
+    $('stCount').textContent = $('shortTitle').value.length;
+    $('abCount').textContent = words($('abstract').value);
+
+    setR('r-journal', $('journal').value.trim() + ($('publisher').value ? ' (' + $('publisher').value + ')' : ''));
+    if (!$('journal').value.trim()) setR('r-journal','');
+    setR('r-type', $('articleType').value);
+    setR('r-title', $('title').value.trim());
+    var wc = words($('abstract').value);
+    setR('r-abs', wc ? wc + ' words' : '');
+    var kws = kwList();
+    var kwEl = $('r-kw');
+    if (kws.length){ kwEl.innerHTML = ''; kws.forEach(function(k){ var s=document.createElement('span'); s.className='tag'; s.textContent=k; kwEl.appendChild(s); }); kwEl.classList.remove('empty'); }
+    else setR('r-kw','');
+    var au = authors().filter(function(a){return a.name;});
+    setR('r-auth', au.map(function(a){return a.name;}).join('; '));
+    var n = ['c1','c2','c3'].filter(function(id){return $(id).checked;}).length;
+    $('r-decl').textContent = n + ' of 3 confirmed';
+    $('r-decl').classList.toggle('empty', n === 0);
+
+    var a0 = authors()[0];
+    var checks = [
+      $('journal').value.trim(), $('articleType').value, $('title').value.trim(),
+      wc > 0 && wc <= 250, kws.length >= 4, a0.name, /\S+@\S+\.\S+/.test(a0.email), a0.aff,
+      $('coverLetter').value.trim(), $('coi').value, $('dataAvail').value, n === 3
+    ];
+    var done = checks.filter(Boolean).length;
+    var pct = Math.round(done / checks.length * 100);
+    $('pct').textContent = pct + '%';
+    $('barFill').style.width = pct + '%';
+  }
+
+  function mark(el, bad){ var f = el.closest('.field'); if (f) f.classList.toggle('invalid', !!bad); }
+
+  function validate(){
+    var ok = true;
+    var wc = words($('abstract').value);
+    var tests = [
+      [$('journal'), !$('journal').value.trim()],
+      [$('articleType'), !$('articleType').value],
+      [$('title'), !$('title').value.trim()],
+      [$('abstract'), wc === 0 || wc > 250],
+      [$('keywords'), kwList().length < 4]
+    ];
+    tests.forEach(function(t){ mark(t[0], t[1]); if (t[1]) ok = false; });
+    var em = document.querySelector('.a-email');
+    var badEm = !/\S+@\S+\.\S+/.test(em.value);
+    mark(em, badEm); if (badEm) ok = false;
+    return ok;
+  }
+
+  function esc(s){ var d=document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  form.addEventListener('input', update);
+  form.addEventListener('change', update);
+
+  $('addAuthor').addEventListener('click', function(){
+    var count = document.querySelectorAll('[data-author]').length + 1;
+    var d = document.createElement('div');
+    d.className = 'author'; d.setAttribute('data-author','');
+    d.innerHTML = '<h4>Co-author ' + (count-1) + '</h4>' +
+      '<div class="row"><div class="field"><label>Full name</label><input type="text" class="a-name" placeholder="Full name"></div>' +
+      '<div class="field"><label>Email</label><input type="email" class="a-email" placeholder="name@example.com"></div></div>' +
+      '<div class="row"><div class="field"><label>Affiliation</label><input type="text" class="a-aff" placeholder="Department, institution, city, country"></div>' +
+      '<div class="field"><label>ORCID iD</label><input type="text" class="a-orcid" placeholder="0000-0000-0000-0000"></div></div>';
+    $('authorList').appendChild(d);
+  });
+
+  $('resetBtn').addEventListener('click', function(){
+    form.reset();
+    var extra = document.querySelectorAll('[data-author]');
+    for (var i = 1; i < extra.length; i++) extra[i].remove();
+    document.querySelectorAll('.invalid').forEach(function(f){ f.classList.remove('invalid'); });
+    $('receipt').style.display = 'none';
+    update();
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!validate()) { var bad = document.querySelector('.invalid'); if (bad) bad.scrollIntoView({behavior:'smooth', block:'center'}); return; }
+    var ref = 'MS-' + new Date().getFullYear() + '-' + Math.floor(10000 + Math.random()*89999);
+    var au = authors().filter(function(a){return a.name;});
+    $('receiptText').innerHTML =
+      '<p><strong>Reference:</strong> ' + ref + '</p>' +
+      '<p><strong>Title:</strong> ' + esc($('title').value) + '</p>' +
+      '<p><strong>Journal:</strong> ' + esc($('journal').value) + '</p>' +
+      '<p><strong>Authors:</strong> ' + esc(au.map(function(a){return a.name;}).join('; ')) + '</p>' +
+      '<p><strong>Keywords:</strong> ' + esc(kwList().join(', ')) + '</p>' +
+      '<p>This is a demo. No data left this page.</p>';
+    $('receipt').style.display = 'block';
+    $('receipt').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  $('submissionDate').valueAsDate = new Date();
+  update();
+})();
+</script>
+</body>
+</html>
